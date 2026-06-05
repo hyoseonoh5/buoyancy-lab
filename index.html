@@ -517,14 +517,29 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
         <p style="font-size:13px;color:var(--text3);margin-bottom:14px;line-height:1.7">
           💡 실험 전에 결과를 예측해 보세요. 아래 빈칸을 채워 가설을 완성하세요.
         </p>
-        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:16px;font-weight:500;color:var(--text);line-height:2.2">
+        <!-- 가설 1 -->
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:16px;font-weight:500;color:var(--text);line-height:2.2;margin-bottom:10px">
           <span>잠긴 부피가</span>
-          <input type="text" id="hypo1" placeholder="(예: 커질)​"
+          <input type="text" id="hypo1"
             style="border:none;border-bottom:2px solid var(--accent);background:transparent;
                    color:var(--yellow);font-size:16px;font-weight:700;width:110px;
                    text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
           <span>수록 무게는</span>
-          <input type="text" id="hypo2" placeholder="(예: 작아질)"
+          <input type="text" id="hypo2"
+            style="border:none;border-bottom:2px solid var(--accent);background:transparent;
+                   color:var(--yellow);font-size:16px;font-weight:700;width:130px;
+                   text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
+          <span>것이다.</span>
+        </div>
+        <!-- 가설 2 -->
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:16px;font-weight:500;color:var(--text);line-height:2.2">
+          <span>잠긴 부피가</span>
+          <input type="text" id="hypo3"
+            style="border:none;border-bottom:2px solid var(--accent);background:transparent;
+                   color:var(--yellow);font-size:16px;font-weight:700;width:110px;
+                   text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
+          <span>수록 추가 받는 부력의 크기는</span>
+          <input type="text" id="hypo4"
             style="border:none;border-bottom:2px solid var(--accent);background:transparent;
                    color:var(--yellow);font-size:16px;font-weight:700;width:130px;
                    text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
@@ -918,6 +933,8 @@ function collectData() {
     q3:document.getElementById("q3ans").value,
     hypothesis1:document.getElementById("hypo1")?.value||"",
     hypothesis2:document.getElementById("hypo2")?.value||"",
+    hypothesis3:document.getElementById("hypo3")?.value||"",
+    hypothesis4:document.getElementById("hypo4")?.value||"",
     conclusion1:document.getElementById("c1").value,
     conclusion2:document.getElementById("c2").value
   };
@@ -956,7 +973,7 @@ async function submitData(){
 function showStatus(m,t){const el=document.getElementById("status-msg");el.textContent=m;el.className="status-msg "+t;}
 
 function resetApp(){
-  ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","hypo3","hypo4","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
   ["dec-b","dec-c"].forEach(id=>document.getElementById(id).textContent="—");
   goStep(0);
 }
