@@ -554,14 +554,14 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
   </div>
 
   <!-- 자료 수집 (기존 step1 → step2로 id 변경) -->
-  <div id="step4" class="hidden">
+  <div id="step2" class="hidden">
     <div class="card">
-      <div class="section-label">힘센서 측정값 입력 (N)</div>
+      <div class="section-label">자료 수집 — 힘센서 측정값 입력 (N)</div>
 
       <!-- 실험 참고 그림 -->
       <div style="display:flex;justify-content:center;margin-bottom:20px">
         <div style="text-align:center">
-          <svg viewBox="0 0 110 165" xmlns="http://www.w3.org/2000/svg" style="width:150px;height:auto">
+          <svg viewBox="0 0 130 165" xmlns="http://www.w3.org/2000/svg" style="width:150px;height:auto">
             <defs>
               <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#5B8DB8"/><stop offset="100%" stop-color="#2C5F8A"/>
@@ -606,7 +606,9 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
             <!-- 라벨 -->
             <text x="86" y="74" font-size="10" fill="#D4B84A" font-family="sans-serif" font-weight="700">추</text>
             <text x="86" y="132" font-size="10" fill="#6AACF0" font-family="sans-serif" font-weight="700">물</text>
-            <text x="16" y="114" font-size="9" fill="#8AA8C0" font-family="sans-serif">힘 센서</text>
+            <!-- 힘 센서 라벨 + 연결선 -->
+            <line x1="77" y1="27" x2="86" y2="27" stroke="#8AA8C0" stroke-width="1"/>
+            <text x="80" y="30" font-size="9" fill="#8AA8C0" font-family="sans-serif" font-weight="700">힘 센서</text>
           </svg>
           <div style="font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5">
             추를 물에 담그며<br>힘 센서로 힘의 변화를 측정
@@ -646,7 +648,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <button class="submit-btn" onclick="goStep(3)">다음: 자료 해석 →</button>
     </div>
   </div>
-  <div id="step2" class="hidden">
+  <div id="step3" class="hidden">
     <div class="card">
       <div class="section-label">자료 해석 꼬리 질문</div>
       <div class="q-block"><div class="q-num">Q1</div><div class="q-text">(나), (다)에서 감소한 값이 의미하는 것은 무엇인가?</div><div class="q-hint">【 나의 생각 】</div><textarea id="q1ans" placeholder="여기에 답을 써 보세요..."></textarea></div>
@@ -658,7 +660,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <button class="submit-btn" onclick="goStep(4)">다음: 결론·제출 →</button>
     </div>
   </div>
-  <div id="step3" class="hidden">
+  <div id="step4" class="hidden">
     <div class="card">
       <div class="section-label">결론 및 정리</div>
       <div class="conclusion-box">
