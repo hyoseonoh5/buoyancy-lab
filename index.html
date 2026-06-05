@@ -487,10 +487,11 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
   <!-- ★ 실험 스텝 (랜딩 이후) -->
   <div id="view-experiment" class="hidden">
   <div class="step-nav">
-    <button class="step-btn active" onclick="goStep(0)" id="snav0">① 모둠 정보</button>
-    <button class="step-btn" onclick="goStep(1)" id="snav1">② 실험 결과</button>
-    <button class="step-btn" onclick="goStep(2)" id="snav2">③ 자료 해석</button>
-    <button class="step-btn" onclick="goStep(3)" id="snav3">④ 결론·제출</button>
+    <button class="step-btn active" onclick="goStep(0)" id="snav0">⓪ 모둠 정보</button>
+    <button class="step-btn" onclick="goStep(1)" id="snav1">① 가설 설정</button>
+    <button class="step-btn" onclick="goStep(2)" id="snav2">② 자료 수집</button>
+    <button class="step-btn" onclick="goStep(3)" id="snav3">③ 자료 해석</button>
+    <button class="step-btn" onclick="goStep(4)" id="snav4">④ 결론·제출</button>
   </div>
   <div id="step0">
     <div class="card">
@@ -506,9 +507,39 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
         <div class="name-box"><div class="role">크롬북 데이터 입력</div><input type="text" id="name3" placeholder="이름 입력"></div>
       </div>
     </div>
-    <button class="submit-btn" onclick="goStep(1)">다음: 실험 결과 입력 →</button>
+    <button class="submit-btn" onclick="goStep(1)">다음: 가설 설정 →</button>
   </div>
+  <!-- 가설 설정 step -->
   <div id="step1" class="hidden">
+    <div class="card">
+      <div class="section-label">가설 설정</div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1rem">
+        <p style="font-size:13px;color:var(--text3);margin-bottom:14px;line-height:1.7">
+          💡 실험 전에 결과를 예측해 보세요. 아래 빈칸을 채워 가설을 완성하세요.
+        </p>
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:16px;font-weight:500;color:var(--text);line-height:2.2">
+          <span>잠긴 부피가</span>
+          <input type="text" id="hypo1" placeholder="(예: 커질)​"
+            style="border:none;border-bottom:2px solid var(--accent);background:transparent;
+                   color:var(--yellow);font-size:16px;font-weight:700;width:110px;
+                   text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
+          <span>수록 무게는</span>
+          <input type="text" id="hypo2" placeholder="(예: 작아질)"
+            style="border:none;border-bottom:2px solid var(--accent);background:transparent;
+                   color:var(--yellow);font-size:16px;font-weight:700;width:130px;
+                   text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
+          <span>것이다.</span>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="submit-btn gray" onclick="goStep(0)">← 이전</button>
+      <button class="submit-btn" onclick="goStep(2)">다음: 자료 수집 →</button>
+    </div>
+  </div>
+
+  <!-- 자료 수집 (기존 step1 → step2로 id 변경) -->
+  <div id="step4" class="hidden">
     <div class="card">
       <div class="section-label">힘센서 측정값 입력 (N)</div>
 
@@ -596,8 +627,8 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <p style="font-size:11px;color:var(--text3);margin-top:8px">※ 감소한 값 = (가) − (나) 또는 (가) − (다) | 값 입력 시 자동 계산</p>
     </div>
     <div class="btn-row">
-      <button class="submit-btn gray" onclick="goStep(0)">← 이전</button>
-      <button class="submit-btn" onclick="goStep(2)">다음: 자료 해석 →</button>
+      <button class="submit-btn gray" onclick="goStep(1)">← 이전</button>
+      <button class="submit-btn" onclick="goStep(3)">다음: 자료 해석 →</button>
     </div>
   </div>
   <div id="step2" class="hidden">
@@ -608,8 +639,8 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <div class="q-block"><div class="q-num">Q3</div><div class="q-text">물에 잠긴 추의 부피와 부력의 크기는 어떤 관계인지 설명해 보자.</div><div class="q-hint">【 나의 결론 】</div><textarea id="q3ans" placeholder="잠긴 부피가 커질수록..."></textarea></div>
     </div>
     <div class="btn-row">
-      <button class="submit-btn gray" onclick="goStep(1)">← 이전</button>
-      <button class="submit-btn" onclick="goStep(3)">다음: 결론·제출 →</button>
+      <button class="submit-btn gray" onclick="goStep(3)">← 이전</button>
+      <button class="submit-btn" onclick="goStep(4)">다음: 결론·제출 →</button>
     </div>
   </div>
   <div id="step3" class="hidden">
@@ -617,8 +648,8 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <div class="section-label">결론 및 정리</div>
       <div class="conclusion-box">
         <div class="c-title">★ 오늘 실험에서 알게 된 것을 완성해 보세요</div>
-        <div class="fill-blank"><span>부력은 물체가 밀어낸</span><input type="text" id="c1" placeholder="________"><span>(이)와 같고,</span></div>
-        <div class="fill-blank"><span>물에 잠긴 부피가 클수록 부력은</span><input type="text" id="c2" placeholder="________"><span>.</span></div>
+        <div class="fill-blank"><span>부력은 물체가 밀어낸</span><input type="text" id="c1" placeholder=""><span>(이)와 같고,</span></div>
+        <div class="fill-blank"><span>물에 잠긴 부피가 클수록 부력은</span><input type="text" id="c2" placeholder=""><span>.</span></div>
       </div>
     </div>
     <div class="card">
@@ -842,7 +873,7 @@ function checkSubmitLock(){
 }
 
 function showAlreadySubmitted(cls, grp){
-  ["step0","step1","step2","step3"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+  ["step0","step1","step2","step3","step4"].forEach(id=>document.getElementById(id).classList.add("hidden"));
   document.getElementById("step-success").classList.remove("hidden");
   document.getElementById("success-info").textContent=`${cls} ${grp} — 이미 제출 완료되었습니다. 교사에게 취소를 요청하세요.`;
   // 새 모둠 버튼 숨기기 (다른 모둠은 선택 가능하도록 리셋 버튼으로 교체)
@@ -851,9 +882,9 @@ function showAlreadySubmitted(cls, grp){
 }
 
 function goStep(n) {
-  ["step0","step1","step2","step3","step-success"].forEach((id,i)=>
+  ["step0","step1","step2","step3","step4","step-success"].forEach((id,i)=>
     document.getElementById(id).classList.toggle("hidden",i!==n));
-  for(let i=0;i<4;i++){
+  for(let i=0;i<5;i++){
     const b=document.getElementById("snav"+i);
     b.classList.remove("active","done");
     if(i===n) b.classList.add("active"); else if(i<n) b.classList.add("done");
@@ -885,6 +916,8 @@ function collectData() {
     q2b:document.getElementById("q2b").value,
     q2c:document.getElementById("q2c").value,
     q3:document.getElementById("q3ans").value,
+    hypothesis1:document.getElementById("hypo1")?.value||"",
+    hypothesis2:document.getElementById("hypo2")?.value||"",
     conclusion1:document.getElementById("c1").value,
     conclusion2:document.getElementById("c2").value
   };
@@ -912,7 +945,7 @@ async function submitData(){
     const cached=JSON.parse(localStorage.getItem("buoyancy_data")||"[]");
     cached.push(data);localStorage.setItem("buoyancy_data",JSON.stringify(cached));
     localStorage.setItem(getSubmitKey(data.class,data.group),"1");
-    document.getElementById("step3").classList.add("hidden");
+    document.getElementById("step4").classList.add("hidden");
     document.getElementById("step-success").classList.remove("hidden");
     document.getElementById("success-info").textContent=`${data.class} ${data.group} 데이터가 저장되었습니다.`;
     const rb=document.querySelector(".reset-btn");
@@ -923,7 +956,7 @@ async function submitData(){
 function showStatus(m,t){const el=document.getElementById("status-msg");el.textContent=m;el.className="status-msg "+t;}
 
 function resetApp(){
-  ["sel-class","sel-group","name1","name2","name3","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
   ["dec-b","dec-c"].forEach(id=>document.getElementById(id).textContent="—");
   goStep(0);
 }
