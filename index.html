@@ -955,13 +955,13 @@ function collectData() {
 // Apps Script URL — PIN 인증 후 교사 설정에서만 저장/조회
 // 학생 화면 소스에는 URL이 노출되지 않음
 function getSheetsUrl(){
-  return localStorage.getItem("_su") || "";
+  return localStorage.getItem("_su") || "https://script.google.com/macros/s/AKfycbxcEkX6WPCVtNuyMik5oUEQwMvH-Isjv1pw6L-h7vYDy7FmiVCv60pcdV-3-JcM8STLeQ/exec";
 }
 
 async function submitData(){
   const url = getSheetsUrl();
   if(!url){
-    showStatus("선생님이 아직 URL을 설정하지 않았습니다. 선생님께 문의하세요.","err");
+    showStatus("제출 오류가 발생했습니다. 선생님께 문의하세요.","err");
     return;
   }
   const btn=document.getElementById("submit-btn");
