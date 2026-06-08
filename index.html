@@ -236,12 +236,6 @@ table.dtable tbody td{padding:10px 8px;text-align:center;vertical-align:middle;c
 .notice-green{background:#0a2018;border:1px solid #1a5c3a;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#4ade80;line-height:1.7}
 .notice-setup{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.7}
 
-/* ── 토스트 알림 ─────────────────────────────────── */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e3a58;color:var(--text);border:1px solid var(--accent);border-radius:10px;padding:12px 22px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.4)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.toast-ok{border-color:var(--green);color:var(--green)}
-.toast.toast-err{border-color:var(--red);color:var(--red)}
-
 @media(max-width:600px){
   .chart-row,.name-row,.grid2,.q2-row{grid-template-columns:1fr}
   .land-btn-main{font-size:18px;padding:18px}
@@ -508,7 +502,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       </div>
       <div class="section-label" style="margin-top:16px">모둠원 이름</div>
       <div class="name-row">
-        <div class="name-box"><div class="role">뒷정리 및 발표</div><input type="text" id="name1" placeholder="이름 입력"></div>
+        <div class="name-box"><div class="role">실험자</div><input type="text" id="name1" placeholder="이름 입력"></div>
         <div class="name-box"><div class="role">준비물 수령·활동지 기록</div><input type="text" id="name2" placeholder="이름 입력"></div>
         <div class="name-box"><div class="role">크롬북 데이터 입력</div><input type="text" id="name3" placeholder="이름 입력"></div>
       </div>
@@ -530,7 +524,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
             style="border:none;border-bottom:2px solid var(--accent);background:transparent;
                    color:var(--yellow);font-size:16px;font-weight:700;width:110px;
                    text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;padding:2px 4px">
-          <span>수록 측정값은</span>
+          <span>수록 무게는</span>
           <input type="text" id="hypo2"
             style="border:none;border-bottom:2px solid var(--accent);background:transparent;
                    color:var(--yellow);font-size:16px;font-weight:700;width:130px;
@@ -760,7 +754,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
         <div class="detail-section">
           <div class="detail-section-title">모둠 정보</div>
           <div class="drow"><div class="dl">제출 시간</div><div class="dv" id="dp-time"></div></div>
-          <div class="drow"><div class="dl">뒷정리·발표</div><div class="dv" id="dp-m1"></div></div>
+          <div class="drow"><div class="dl">실험자</div><div class="dv" id="dp-m1"></div></div>
           <div class="drow"><div class="dl">준비물·기록</div><div class="dv" id="dp-m2"></div></div>
           <div class="drow"><div class="dl">크롬북 입력</div><div class="dv" id="dp-m3"></div></div>
         </div>
@@ -814,9 +808,6 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
     <button class="btn btn-sm" style="background:#fff3cd;color:#856404;border:1px solid #ffe08a" id="dp-cancel-btn">제출 취소</button>
   </div>
 </div>
-
-<!-- 토스트 알림 -->
-<div class="toast" id="toast-msg"></div>
 
 <script>
 // SHA-256("0912") — 평문 PIN은 코드 어디에도 없음
@@ -901,10 +892,10 @@ function checkSubmitLock(){
 function showAlreadySubmitted(cls, grp){
   ["step0","step1","step2","step3","step4"].forEach(id=>document.getElementById(id).classList.add("hidden"));
   document.getElementById("step-success").classList.remove("hidden");
-  document.getElementById("success-info").textContent=`${cls} ${grp} — 이미 제출 완료되었습니다. 선생님께 취소를 요청하세요.`;
-  // 재제출 방지: 버튼 완전히 숨김 (교사 대시보드 취소 후에만 다시 입력 가능)
+  document.getElementById("success-info").textContent=`${cls} ${grp} — 이미 제출 완료되었습니다. 교사에게 취소를 요청하세요.`;
+  // 새 모둠 버튼 숨기기 (다른 모둠은 선택 가능하도록 리셋 버튼으로 교체)
   const rb = document.querySelector(".reset-btn");
-  if(rb){ rb.style.display="none"; }
+  if(rb){ rb.textContent="다른 모둠으로 변경"; rb.onclick=resetApp; }
 }
 
 function goStep(n) {
@@ -977,7 +968,7 @@ async function submitData(){
     document.getElementById("step-success").classList.remove("hidden");
     document.getElementById("success-info").textContent=`${data.class} ${data.group} 데이터가 저장되었습니다.`;
     const rb=document.querySelector(".reset-btn");
-    if(rb){ rb.style.display="none"; }
+    if(rb){rb.textContent="다른 모둠으로 변경";rb.onclick=resetApp;}
   }catch(e){showStatus("전송 실패: "+e.message,"err");btn.disabled=false;btn.textContent="🚀 제출하기";}
 }
 
@@ -1000,40 +991,16 @@ function saveTeacherUrl(){
 
 async function loadFromSheets(){
   const url=(document.getElementById("teacher-url").value||localStorage.getItem("_su")||"").trim();
-  if(!url){showToast("설정 탭에서 URL을 먼저 입력해 주세요.","err");switchDTab("setup");return;}
-  // 새로고침 중에도 기존 데이터 화면 유지 — 버튼만 비활성
-  const refreshBtn = document.querySelector("button[onclick='loadFromSheets()']");
-  if(refreshBtn){ refreshBtn.disabled=true; refreshBtn.textContent="⏳ 불러오는 중..."; }
-  showToast("구글 시트에서 데이터를 불러오는 중...");
+  if(!url){alert("설정 탭에서 URL을 먼저 입력해 주세요.");switchDTab("setup");return;}
   try{
     const res=await fetch(url); const json=await res.json();
     if(Array.isArray(json)&&json.length>0){
       const ex=new Set(allData.map(d=>d.timestamp+"|"+d.class+"|"+d.group));
-      let added=0;
-      json.forEach(d=>{if(!ex.has(d.timestamp+"|"+d.class+"|"+d.group)){allData.push(d);added++;}});
+      json.forEach(d=>{if(!ex.has(d.timestamp+"|"+d.class+"|"+d.group))allData.push(d);});
       localStorage.setItem("buoyancy_data",JSON.stringify(allData));
-      updateDashboard();
-      showToast(`✅ 구글 시트 동기화 완료 (신규 ${added}건, 총 ${json.length}건)`,"ok");
-    }else{
-      showToast("데이터가 없거나 URL이 잘못되었습니다.","err");
-    }
-  }catch(e){
-    showToast("불러오기 실패: "+e.message,"err");
-  }finally{
-    if(refreshBtn){ refreshBtn.disabled=false; refreshBtn.textContent="🔄 구글 시트 새로고침"; }
-  }
-}
-
-let _toastTimer=null;
-function showToast(msg, type=""){
-  const el=document.getElementById("toast-msg");
-  el.textContent=msg;
-  el.className="toast"+(type?" toast-"+type:"");
-  // force reflow
-  void el.offsetWidth;
-  el.classList.add("show");
-  if(_toastTimer) clearTimeout(_toastTimer);
-  _toastTimer=setTimeout(()=>el.classList.remove("show"), type==="ok"?3000:4500);
+      updateDashboard(); alert(`구글 시트에서 ${json.length}개 데이터를 불러왔습니다.`);
+    }else{alert("데이터가 없거나 URL이 잘못되었습니다.");}
+  }catch(e){alert("불러오기 실패: "+e.message);}
 }
 
 function updateDashboard(){updateStats();updateFilterOpts();renderTable();renderCharts();}
@@ -1191,7 +1158,7 @@ function cancelSubmit(cls,grp,idx){
 
 function exportExcel(){
   if(!allData.length){alert("다운로드할 데이터가 없습니다.");return;}
-  const headers=["제출시간","반","모둠","뒷정리·발표","준비물·기록","크롬북입력","(가)공기중N","(나)반쯤잠김N","(다)완전잠김N","부력(나)N","부력(다)N","Q1답변","Q2(나)","Q2(다)","Q3답변","결론빈칸1","결론빈칸2"];
+  const headers=["제출시간","반","모둠","실험자","준비물·기록","크롬북입력","(가)공기중N","(나)반쯤잠김N","(다)완전잠김N","부력(나)N","부력(다)N","Q1답변","Q2(나)","Q2(다)","Q3답변","결론빈칸1","결론빈칸2"];
   const keys=["timestamp","class","group","member1","member2","member3","val_a","val_b","val_c","buoy_b","buoy_c","q1","q2b","q2c","q3","conclusion1","conclusion2"];
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.aoa_to_sheet([headers,...allData.map(d=>keys.map(k=>d[k]||""))]);
