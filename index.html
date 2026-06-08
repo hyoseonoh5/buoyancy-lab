@@ -671,7 +671,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <div class="section-label">결론 및 정리</div>
       <div class="conclusion-box">
         <div class="c-title">★ 오늘 실험에서 알게 된 것을 완성해 보세요</div>
-        <div class="fill-blank"><span>물에 잠긴 부피가 클수록 부력은</span><input type="text" id="c2" placeholder=""><span>.</span></div>
+        <div class="fill-blank"><input type="text" id="c1" placeholder=""><span>수록 부력은</span><input type="text" id="c2" placeholder=""><span>.</span></div>
       </div>
     </div>
     <div class="card">
@@ -803,6 +803,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
         </div>
         <div class="detail-section">
           <div class="detail-section-title">결론 빈칸</div>
+          <div class="drow"><div class="dl">___ 수록</div><div class="dv" id="dp-c1"></div></div>
           <div class="drow"><div class="dl">부력은 ___</div><div class="dv" id="dp-c2"></div></div>
         </div>
       </div>
@@ -944,6 +945,7 @@ function collectData() {
     hypothesis2:document.getElementById("hypo2")?.value||"",
     hypothesis3:document.getElementById("hypo3")?.value||"",
     hypothesis4:document.getElementById("hypo4")?.value||"",
+    conclusion1:document.getElementById("c1").value,
     conclusion2:document.getElementById("c2").value
   };
 }
@@ -981,7 +983,7 @@ async function submitData(){
 function showStatus(m,t){const el=document.getElementById("status-msg");el.textContent=m;el.className="status-msg "+t;}
 
 function resetApp(){
-  ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","hypo3","hypo4","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","hypo3","hypo4","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
   ["dec-b","dec-c"].forEach(id=>document.getElementById(id).textContent="—");
   goStep(0);
 }
@@ -1142,6 +1144,7 @@ function fillDetailPanel(d, idx){
   document.getElementById("dp-q2b").textContent = d.q2b||"—";
   document.getElementById("dp-q2c").textContent = d.q2c||"—";
   document.getElementById("dp-q3").textContent = d.q3||"—";
+  document.getElementById("dp-c1").textContent = d.conclusion1||"—";
   document.getElementById("dp-c2").textContent = d.conclusion2||"—";
 
   // 이전/다음 버튼
@@ -1187,8 +1190,8 @@ function cancelSubmit(cls,grp,idx){
 
 function exportExcel(){
   if(!allData.length){alert("다운로드할 데이터가 없습니다.");return;}
-  const headers=["제출시간","반","모둠","뒷정리·발표","준비물·기록","크롬북입력","(가)공기중N","(나)반쯤잠김N","(다)완전잠김N","부력(나)N","부력(다)N","Q1답변","Q2(나)","Q2(다)","Q3답변","결론빈칸"];
-  const keys=["timestamp","class","group","member1","member2","member3","val_a","val_b","val_c","buoy_b","buoy_c","q1","q2b","q2c","q3","conclusion2"];
+  const headers=["제출시간","반","모둠","뒷정리·발표","준비물·기록","크롬북입력","(가)공기중N","(나)반쯤잠김N","(다)완전잠김N","부력(나)N","부력(다)N","Q1답변","Q2(나)","Q2(다)","Q3답변","결론빈칸1","결론빈칸2"];
+  const keys=["timestamp","class","group","member1","member2","member3","val_a","val_b","val_c","buoy_b","buoy_c","q1","q2b","q2c","q3","conclusion1","conclusion2"];
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.aoa_to_sheet([headers,...allData.map(d=>keys.map(k=>d[k]||""))]);
   ws["!cols"]=keys.map((_,i)=>({wch:i<3?10:i<6?12:i<11?10:30}));
