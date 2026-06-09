@@ -172,12 +172,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100vh
 .table-wrap{background:white;border-radius:12px;border:1px solid #dde3ee;overflow:auto;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 table.dtable{width:100%;border-collapse:collapse;font-size:13px;min-width:860px}
 table.dtable thead th{background:#1a3a5c;color:var(--accent2);padding:11px 8px;text-align:center;font-weight:700;white-space:nowrap;position:sticky;top:0;border-bottom:1px solid var(--border)}
-table.dtable tbody tr{border-bottom:1px solid #f0f3f8;transition:background .1s}
-table.dtable tbody tr:hover{background:#f4f7fb}
+table.dtable tbody tr{border-bottom:1px solid #e8edf5;transition:background .1s;color:#111}
+table.dtable tbody tr:hover{background:#eef3fc}
 table.dtable tbody td{padding:10px 8px;text-align:center;vertical-align:middle;color:#1a1a2e;font-size:13px}
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
-.badge-cls{background:#E3F0FF;color:#1A3A6B}
-.badge-grp{background:#FFF3CD;color:#856404}
+.badge-cls{background:#dbeafe;color:#1A3A6B;font-weight:700}
+.badge-grp{background:#fef3c7;color:#7c5a00;font-weight:700}
 .ans-cell{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;color:#444}
 .ans-cell:hover{color:var(--accent);text-decoration:underline}
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
@@ -271,16 +271,16 @@ table.dtable tbody td{padding:10px 8px;text-align:center;vertical-align:middle;c
 .stat-card .ssub{font-size:11px;color:#aaa;margin-top:2px}
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
 .filter-row select,.filter-row input{padding:7px 11px;border-radius:7px;border:1px solid #dde3ee;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;color:#1a1a2e;background:white}
-.table-wrap{background:white;border-radius:12px;border:1px solid #e0e8f5;overflow:auto;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:1.5rem}
+.table-wrap{background:white;border-radius:12px;border:1px solid #dde3ee;overflow:auto;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:1.5rem}
 table.dtable{width:100%;border-collapse:collapse;font-size:12px;min-width:860px}
-table.dtable thead th{background:#1A3A6B;color:white;padding:10px 8px;text-align:center;font-weight:500;white-space:nowrap;position:sticky;top:0}
+table.dtable thead th{background:#1A3A6B;color:white;padding:10px 8px;text-align:center;font-weight:700;white-space:nowrap;position:sticky;top:0}
 table.dtable tbody tr{border-bottom:1px solid #f0f3f8;transition:background .1s}
 table.dtable tbody tr:hover{background:#f4f7fb}
-table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
+table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;color:#111}
 .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500}
 .badge-cls{background:#E3F0FF;color:#1A3A6B}
 .badge-grp{background:#FFF3CD;color:#856404}
-.ans-cell{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;color:#555}
+.ans-cell{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;color:#111}
 .ans-cell:hover{color:#1A3A6B;text-decoration:underline}
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
 .chart-card{background:white;border-radius:12px;border:1px solid #e0e8f5;padding:1rem;box-shadow:0 1px 4px rgba(0,0,0,.05)}
@@ -724,7 +724,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
       <select id="filter-class" onchange="renderTable()"><option value="">전체 반</option></select>
       <select id="filter-group" onchange="renderTable()"><option value="">전체 모둠</option></select>
       <input type="text" id="filter-search" placeholder="이름 검색..." oninput="renderTable()" style="width:150px">
-      <span id="row-count" style="font-size:12px;color:#888"></span>
+      <span id="row-count" style="font-size:12px;color:#444;font-weight:500"></span>
     </div>
     <div class="table-wrap" id="table-wrap-anchor">
       <table class="dtable">
