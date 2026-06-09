@@ -355,27 +355,28 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
 <div class="pin-overlay hidden" id="pin-overlay">
   <div class="pin-box">
     <h2>🔒 교사 전용</h2>
-    <p>PIN 번호를 입력하세요</p>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
+    <p>비밀번호를 입력하세요</p>
+    <div style="margin-bottom:1.2rem">
+      <input type="password" id="pin-input"
+        style="width:100%;padding:12px 16px;border-radius:8px;border:1.5px solid var(--border);
+               background:var(--bg3);color:var(--text);font-size:22px;font-family:'Noto Sans KR',sans-serif;
+               outline:none;text-align:center;letter-spacing:6px"
+        maxlength="10"
+        placeholder="••••"
+        onkeydown="if(event.key==='Enter')verifyPin()"
+        oninput="document.getElementById('pin-err').textContent=''">
     </div>
-    <div class="pin-keypad">
-      <button class="pin-key" onclick="pinKey('1')">1</button>
-      <button class="pin-key" onclick="pinKey('2')">2</button>
-      <button class="pin-key" onclick="pinKey('3')">3</button>
-      <button class="pin-key" onclick="pinKey('4')">4</button>
-      <button class="pin-key" onclick="pinKey('5')">5</button>
-      <button class="pin-key" onclick="pinKey('6')">6</button>
-      <button class="pin-key" onclick="pinKey('7')">7</button>
-      <button class="pin-key" onclick="pinKey('8')">8</button>
-      <button class="pin-key" onclick="pinKey('9')">9</button>
-      <button class="pin-key del" onclick="pinClear()">취소</button>
-      <button class="pin-key" onclick="pinKey('0')">0</button>
-      <button class="pin-key del" onclick="pinDel()">⌫</button>
-    </div>
+    <button onclick="verifyPin()"
+      style="width:100%;padding:12px;background:var(--accent);color:#0a1220;border:none;
+             border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;
+             font-family:'Noto Sans KR',sans-serif;margin-bottom:10px">
+      확인
+    </button>
+    <button onclick="pinClear()"
+      style="width:100%;padding:9px;background:transparent;color:var(--text3);border:1px solid var(--border);
+             border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+      취소
+    </button>
     <div class="pin-err" id="pin-err"></div>
   </div>
 </div>
@@ -819,7 +820,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle}
 
 <script>
 // SHA-256("0912") — 평문 PIN은 코드 어디에도 없음
-const PIN_HASH = "055f78940c07630352676197ab7c3ed8d5bb204d406e5c6ff101f870bc9b7dd7";
+const PIN_HASH = "62a7722a6980745a3ef86f0c7a14a0216b674dcb49ef898bed75777f61addd94";
 let pinBuffer = "", teacherUnlocked = false;
 
 async function sha256(str) {
@@ -829,32 +830,28 @@ async function sha256(str) {
 
 function openTeacher() {
   if (teacherUnlocked) { switchMain("teacher"); return; }
-  pinBuffer = ""; updatePinDots();
+  document.getElementById("pin-input").value = "";
   document.getElementById("pin-err").textContent = "";
   document.getElementById("pin-overlay").classList.remove("hidden");
+  setTimeout(()=>document.getElementById("pin-input").focus(), 100);
 }
-function pinKey(d) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += d; updatePinDots();
-  if (pinBuffer.length === 4) verifyPin();
-}
-function pinDel() { pinBuffer = pinBuffer.slice(0,-1); updatePinDots(); }
-function pinClear() { pinBuffer = ""; updatePinDots(); document.getElementById("pin-overlay").classList.add("hidden"); }
-function updatePinDots() {
-  for (let i=0;i<4;i++) document.getElementById("pd"+i).classList.toggle("filled", i<pinBuffer.length);
-}
+
+function pinClear() { document.getElementById("pin-input").value=""; document.getElementById("pin-overlay").classList.add("hidden"); }
+
 async function verifyPin() {
-  const h = await sha256(pinBuffer);
+  const val = document.getElementById("pin-input").value;
+  if(!val) return;
+  const h = await sha256(val);
   if (h === PIN_HASH) {
     teacherUnlocked = true;
     document.getElementById("pin-overlay").classList.add("hidden");
+    document.getElementById("pin-input").value = "";
     switchMain("teacher"); loadLocalData();
-    renderSetupTab();  // PIN 통과 후에만 설정 탭 내용 생성
+    renderSetupTab();
   } else {
-    document.getElementById("pin-err").textContent = "PIN이 올바르지 않습니다.";
-    const dots = document.getElementById("pin-dots");
-    dots.classList.add("shake");
-    setTimeout(()=>{ dots.classList.remove("shake"); pinBuffer=""; updatePinDots(); }, 380);
+    document.getElementById("pin-err").textContent = "비밀번호가 올바르지 않습니다.";
+    document.getElementById("pin-input").value = "";
+    document.getElementById("pin-input").focus();
   }
 }
 function teacherLogout() { teacherUnlocked=false; switchMain("student"); }
