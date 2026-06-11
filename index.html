@@ -361,7 +361,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
         style="width:100%;padding:12px 16px;border-radius:8px;border:1.5px solid var(--border);
                background:var(--bg3);color:var(--text);font-size:22px;font-family:'Noto Sans KR',sans-serif;
                outline:none;text-align:center;letter-spacing:6px"
-        maxlength="10"
+        maxlength="20"
         placeholder="••••"
         onkeydown="if(event.key==='Enter')verifyPin()"
         oninput="document.getElementById('pin-err').textContent=''">
@@ -820,7 +820,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
 
 <script>
 // SHA-256("0912") — 평문 PIN은 코드 어디에도 없음
-const PIN_HASH = "9989a37538faecc495bbe774b30fb447a1582b8f1bc14ac88dfd84996a7b799a";
+const PIN_HASH = "e240826a3e44ab5a1ab51b645223372bbc43d0caf70f59242c94494566a62e3b";
 let pinBuffer = "", teacherUnlocked = false;
 
 async function sha256(str) {
