@@ -891,6 +891,8 @@ function checkSubmitLock(){
   if(!cls||!grp) return;
   if(localStorage.getItem(getSubmitKey(cls+"반",grp+"모둠"))){
     showAlreadySubmitted(cls+"반",grp+"모둠");
+  } else {
+    window._submitted = false; // 다른 모둠 선택 시 플래그 해제
   }
 }
 
@@ -909,13 +911,7 @@ function showAlreadySubmitted(cls, grp){
 }
 
 function goStep(n) {
-  // 이미 제출한 모둠은 step 이동 차단 (step-success만 허용)
-  const cls=document.getElementById("sel-class").value;
-  const grp=document.getElementById("sel-group").value;
-  if(cls&&grp&&localStorage.getItem(getSubmitKey(cls+"반",grp+"모둠"))){
-    showAlreadySubmitted(cls+"반",grp+"모둠");
-    return;
-  }
+  if(window._submitted){ return; } // 제출 완료 후 모든 이동 차단
   ["step0","step1","step2","step3","step4","step-success"].forEach((id,i)=>
     document.getElementById(id).classList.toggle("hidden",i!==n));
   for(let i=0;i<5;i++){
@@ -981,17 +977,15 @@ async function submitData(){
     const cached=JSON.parse(localStorage.getItem("buoyancy_data")||"[]");
     cached.push(data);localStorage.setItem("buoyancy_data",JSON.stringify(cached));
     localStorage.setItem(getSubmitKey(data.class,data.group),"1");
-    document.getElementById("step4").classList.add("hidden");
-    document.getElementById("step-success").classList.remove("hidden");
+    showAlreadySubmitted(data.class, data.group);
     document.getElementById("success-info").textContent=`${data.class} ${data.group} 데이터가 저장되었습니다.`;
-    const rb=document.querySelector(".reset-btn");
-    if(rb){ rb.style.display="none"; }
   }catch(e){showStatus("전송 실패: "+e.message,"err");btn.disabled=false;btn.textContent="🚀 제출하기";}
 }
 
 function showStatus(m,t){const el=document.getElementById("status-msg");el.textContent=m;el.className="status-msg "+t;}
 
 function resetApp(){
+  window._submitted = false; // 플래그 해제
   ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","hypo3","hypo4","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
   ["dec-b","dec-c"].forEach(id=>document.getElementById(id).textContent="—");
   // 스텝 네비 버튼 다시 활성화
@@ -999,7 +993,10 @@ function resetApp(){
     const b=document.getElementById("snav"+i);
     if(b){ b.disabled=false; b.style.opacity=""; b.style.cursor=""; }
   }
-  // 리셋 버튼 다시 보이게
+  // 이전/다음 버튼 다시 보이기
+  document.querySelectorAll(".submit-btn.gray, .submit-btn[onclick*='goStep']").forEach(btn=>{
+    btn.style.display="";
+  });
   const rb=document.querySelector(".reset-btn");
   if(rb){ rb.style.display=""; }
   goStep(0);
