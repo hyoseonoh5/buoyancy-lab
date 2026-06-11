@@ -494,11 +494,11 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
   <!-- ★ 실험 스텝 (랜딩 이후) -->
   <div id="view-experiment" class="hidden">
   <div class="step-nav">
-    <button class="step-btn active" onclick="goStep(0)" id="snav0">⓪ 모둠 정보</button>
-    <button class="step-btn" onclick="goStep(1)" id="snav1">① 가설 설정</button>
-    <button class="step-btn" onclick="goStep(2)" id="snav2">② 자료 수집</button>
-    <button class="step-btn" onclick="goStep(3)" id="snav3">③ 자료 해석</button>
-    <button class="step-btn" onclick="goStep(4)" id="snav4">④ 결론·제출</button>
+    <button class="step-btn active" id="snav0" style="cursor:default">⓪ 모둠 정보</button>
+    <button class="step-btn" id="snav1" style="cursor:default">① 가설 설정</button>
+    <button class="step-btn" id="snav2" style="cursor:default">② 자료 수집</button>
+    <button class="step-btn" id="snav3" style="cursor:default">③ 자료 해석</button>
+    <button class="step-btn" id="snav4" style="cursor:default">④ 결론·제출</button>
   </div>
   <div id="step0">
     <div class="card">
@@ -514,7 +514,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
         <div class="name-box"><div class="role">크롬북 데이터 입력</div><input type="text" id="name3" placeholder="이름 입력"></div>
       </div>
     </div>
-    <button class="submit-btn" onclick="goStep(1)">다음: 가설 설정 →</button>
+    <button class="submit-btn" onclick="goStep0Next()" id="step0-next" disabled>다음: 가설 설정 →</button>
   </div>
   <!-- 가설 설정 step -->
   <div id="step1" class="hidden">
@@ -555,7 +555,6 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
       </div>
     </div>
     <div class="btn-row">
-      <button class="submit-btn gray" onclick="goStep(0)">← 이전</button>
       <button class="submit-btn" onclick="goStep(2)">다음: 자료 수집 →</button>
     </div>
   </div>
@@ -651,7 +650,6 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
       <p style="font-size:11px;color:var(--text3);margin-top:8px">※ 감소한 값 = (가) − (나) 또는 (가) − (다) | 값 입력 시 자동 계산</p>
     </div>
     <div class="btn-row">
-      <button class="submit-btn gray" onclick="goStep(1)">← 이전</button>
       <button class="submit-btn" onclick="goStep(3)">다음: 자료 해석 →</button>
     </div>
   </div>
@@ -663,7 +661,6 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
       <div class="q-block"><div class="q-num">Q3</div><div class="q-text">물에 잠긴 추의 부피와 부력의 크기는 어떤 관계인지 설명해 보자.</div><div class="q-hint">【 나의 결론 】</div><textarea id="q3ans" placeholder="잠긴 부피가 커질수록..."></textarea></div>
     </div>
     <div class="btn-row">
-      <button class="submit-btn gray" onclick="goStep(2)">← 이전</button>
       <button class="submit-btn" onclick="goStep(4)">다음: 결론·제출 →</button>
     </div>
   </div>
@@ -680,9 +677,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
       <div class="notice-green">📋 제출 버튼을 누르면 선생님 대시보드에 실시간으로 저장됩니다.</div>
     </div>
     <div class="btn-row">
-      <button class="submit-btn gray" onclick="goStep(2)">← 이전</button>
-
-      <button class="submit-btn" onclick="submitData()" id="submit-btn" style="flex:2" disabled>🚀 제출하기</button>
+      <button class="submit-btn" onclick="submitData()" id="submit-btn" disabled>🚀 제출하기</button>
     </div>
     <div class="status-msg" id="status-msg"></div>
   </div>
@@ -883,9 +878,38 @@ const sc=document.getElementById("sel-class"), sg=document.getElementById("sel-g
 for(let i=1;i<=11;i++) sc.innerHTML+=`<option value="${i}">${i}반</option>`;
 for(let i=1;i<=10;i++) sg.innerHTML+=`<option value="${i}">${i}모둠</option>`;
 window.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("sel-class").addEventListener("change", ()=>{ checkSubmitLock(); checkSubmitBtn(); });
-  document.getElementById("sel-group").addEventListener("change", ()=>{ checkSubmitLock(); checkSubmitBtn(); });
+  // 반/모둠 변경 시 잠금 체크 + 제출 버튼 체크
+  document.getElementById("sel-class").addEventListener("change", ()=>{ checkSubmitLock(); checkSubmitBtn(); checkStep0Next(); });
+  document.getElementById("sel-group").addEventListener("change", ()=>{ checkSubmitLock(); checkSubmitBtn(); checkStep0Next(); });
+  // 이름 입력 시 다음 버튼 체크
+  ["name1","name2","name3"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", checkStep0Next);
+  });
 });
+
+// step0 다음 버튼: 반+모둠+이름3개 모두 입력돼야 활성화
+function checkStep0Next(){
+  const cls = document.getElementById("sel-class").value;
+  const grp = document.getElementById("sel-group").value;
+  const n1  = document.getElementById("name1").value.trim();
+  const n2  = document.getElementById("name2").value.trim();
+  const n3  = document.getElementById("name3").value.trim();
+  const btn = document.getElementById("step0-next");
+  if(btn) btn.disabled = !(cls && grp && n1 && n2 && n3);
+}
+
+// step0 다음 버튼 클릭 시 검증
+function goStep0Next(){
+  const cls = document.getElementById("sel-class").value;
+  const grp = document.getElementById("sel-group").value;
+  const n1  = document.getElementById("name1").value.trim();
+  const n2  = document.getElementById("name2").value.trim();
+  const n3  = document.getElementById("name3").value.trim();
+  if(!cls){ alert("반을 선택해 주세요."); return; }
+  if(!grp){ alert("모둠을 선택해 주세요."); return; }
+  if(!n1||!n2||!n3){ alert("모둠원 이름을 모두 입력해 주세요."); return; }
+  goStep(1);
+}
 
 function checkSubmitBtn(){
   const cls=document.getElementById("sel-class").value;
@@ -921,8 +945,8 @@ function showAlreadySubmitted(cls, grp){
     const b=document.getElementById("snav"+i);
     if(b){ b.disabled=true; b.style.opacity="0.3"; b.style.cursor="not-allowed"; }
   }
-  // 이전/다음/다음단계 버튼 완전 숨기기
-  document.querySelectorAll("button.submit-btn").forEach(btn=>{
+  // 모든 이동/제출 버튼 완전 숨기기
+  document.querySelectorAll("button.submit-btn, #step0-next").forEach(btn=>{
     btn.style.display="none";
   });
 }
