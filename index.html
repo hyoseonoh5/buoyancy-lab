@@ -898,12 +898,24 @@ function showAlreadySubmitted(cls, grp){
   ["step0","step1","step2","step3","step4"].forEach(id=>document.getElementById(id).classList.add("hidden"));
   document.getElementById("step-success").classList.remove("hidden");
   document.getElementById("success-info").textContent=`${cls} ${grp} — 이미 제출 완료되었습니다. 선생님께 취소를 요청하세요.`;
-  // 재제출 방지: 버튼 완전히 숨김 (교사 대시보드 취소 후에만 다시 입력 가능)
+  // 재제출 방지: 리셋 버튼 숨김
   const rb = document.querySelector(".reset-btn");
   if(rb){ rb.style.display="none"; }
+  // 스텝 네비 버튼 모두 비활성화
+  for(let i=0;i<5;i++){
+    const b=document.getElementById("snav"+i);
+    if(b){ b.disabled=true; b.style.opacity="0.3"; b.style.cursor="not-allowed"; }
+  }
 }
 
 function goStep(n) {
+  // 이미 제출한 모둠은 step 이동 차단 (step-success만 허용)
+  const cls=document.getElementById("sel-class").value;
+  const grp=document.getElementById("sel-group").value;
+  if(cls&&grp&&localStorage.getItem(getSubmitKey(cls+"반",grp+"모둠"))){
+    showAlreadySubmitted(cls+"반",grp+"모둠");
+    return;
+  }
   ["step0","step1","step2","step3","step4","step-success"].forEach((id,i)=>
     document.getElementById(id).classList.toggle("hidden",i!==n));
   for(let i=0;i<5;i++){
@@ -982,6 +994,14 @@ function showStatus(m,t){const el=document.getElementById("status-msg");el.textC
 function resetApp(){
   ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","hypo3","hypo4","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
   ["dec-b","dec-c"].forEach(id=>document.getElementById(id).textContent="—");
+  // 스텝 네비 버튼 다시 활성화
+  for(let i=0;i<5;i++){
+    const b=document.getElementById("snav"+i);
+    if(b){ b.disabled=false; b.style.opacity=""; b.style.cursor=""; }
+  }
+  // 리셋 버튼 다시 보이게
+  const rb=document.querySelector(".reset-btn");
+  if(rb){ rb.style.display=""; }
   goStep(0);
 }
 
