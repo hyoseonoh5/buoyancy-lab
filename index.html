@@ -682,7 +682,7 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
     <div class="btn-row">
       <button class="submit-btn gray" onclick="goStep(2)">← 이전</button>
 
-      <button class="submit-btn" onclick="submitData()" id="submit-btn" style="flex:2">🚀 제출하기</button>
+      <button class="submit-btn" onclick="submitData()" id="submit-btn" style="flex:2" disabled>🚀 제출하기</button>
     </div>
     <div class="status-msg" id="status-msg"></div>
   </div>
@@ -715,6 +715,11 @@ table.dtable tbody td{padding:9px 8px;text-align:center;vertical-align:middle;co
       <div class="stat-card"><div class="slbl">참여 반 수</div><div class="sval" id="stat-classes">0</div><div class="ssub">개 반</div></div>
       <div class="stat-card"><div class="slbl">평균 부력 (나)</div><div class="sval" id="stat-buoy-b">—</div><div class="ssub">N</div></div>
       <div class="stat-card"><div class="slbl">평균 부력 (다)</div><div class="sval" id="stat-buoy-c">—</div><div class="ssub">N</div></div>
+    </div>
+    <!-- 반별 제출 현황 한눈에 보기 -->
+    <div id="submit-grid-wrap" style="display:none;margin-bottom:1.5rem">
+      <div style="font-size:13px;font-weight:700;color:#1A3A6B;margin-bottom:10px">📊 반별 제출 현황 (클릭하면 해당 반 필터)</div>
+      <div id="submit-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px"></div>
     </div>
     <div class="chart-row" id="chart-row" style="display:none">
       <div class="chart-card"><h3>반별 제출 현황</h3><div class="bar-chart" id="chart-class"></div></div>
@@ -878,9 +883,16 @@ const sc=document.getElementById("sel-class"), sg=document.getElementById("sel-g
 for(let i=1;i<=11;i++) sc.innerHTML+=`<option value="${i}">${i}반</option>`;
 for(let i=1;i<=10;i++) sg.innerHTML+=`<option value="${i}">${i}모둠</option>`;
 window.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("sel-class").addEventListener("change", checkSubmitLock);
-  document.getElementById("sel-group").addEventListener("change", checkSubmitLock);
+  document.getElementById("sel-class").addEventListener("change", ()=>{ checkSubmitLock(); checkSubmitBtn(); });
+  document.getElementById("sel-group").addEventListener("change", ()=>{ checkSubmitLock(); checkSubmitBtn(); });
 });
+
+function checkSubmitBtn(){
+  const cls=document.getElementById("sel-class").value;
+  const grp=document.getElementById("sel-group").value;
+  const btn=document.getElementById("submit-btn");
+  if(btn){ btn.disabled = !(cls && grp); }
+}
 
 // 제출 잠금: localStorage key = "submitted_<반>_<모둠>"
 function getSubmitKey(cls, grp){ return `submitted_${cls}_${grp}`; }
@@ -897,17 +909,22 @@ function checkSubmitLock(){
 }
 
 function showAlreadySubmitted(cls, grp){
+  window._submitted = true;
   ["step0","step1","step2","step3","step4"].forEach(id=>document.getElementById(id).classList.add("hidden"));
   document.getElementById("step-success").classList.remove("hidden");
   document.getElementById("success-info").textContent=`${cls} ${grp} — 이미 제출 완료되었습니다. 선생님께 취소를 요청하세요.`;
-  // 재제출 방지: 리셋 버튼 숨김
+  // 리셋 버튼 숨김
   const rb = document.querySelector(".reset-btn");
   if(rb){ rb.style.display="none"; }
-  // 스텝 네비 버튼 모두 비활성화
+  // 스텝 네비 버튼 비활성화
   for(let i=0;i<5;i++){
     const b=document.getElementById("snav"+i);
     if(b){ b.disabled=true; b.style.opacity="0.3"; b.style.cursor="not-allowed"; }
   }
+  // 이전/다음/다음단계 버튼 완전 숨기기
+  document.querySelectorAll("button.submit-btn").forEach(btn=>{
+    btn.style.display="none";
+  });
 }
 
 function goStep(n) {
@@ -985,21 +1002,9 @@ async function submitData(){
 function showStatus(m,t){const el=document.getElementById("status-msg");el.textContent=m;el.className="status-msg "+t;}
 
 function resetApp(){
-  window._submitted = false; // 플래그 해제
-  ["sel-class","sel-group","name1","name2","name3","hypo1","hypo2","hypo3","hypo4","val-a","val-b","val-c","q1ans","q2b","q2c","q3ans","c1","c2"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
-  ["dec-b","dec-c"].forEach(id=>document.getElementById(id).textContent="—");
-  // 스텝 네비 버튼 다시 활성화
-  for(let i=0;i<5;i++){
-    const b=document.getElementById("snav"+i);
-    if(b){ b.disabled=false; b.style.opacity=""; b.style.cursor=""; }
-  }
-  // 이전/다음 버튼 다시 보이기
-  document.querySelectorAll(".submit-btn.gray, .submit-btn[onclick*='goStep']").forEach(btn=>{
-    btn.style.display="";
-  });
-  const rb=document.querySelector(".reset-btn");
-  if(rb){ rb.style.display=""; }
-  goStep(0);
+  // 페이지 새로고침으로 완전 초기화 (숨긴 버튼 모두 복원)
+  window._submitted = false;
+  location.reload();
 }
 
 // 교사 대시보드
@@ -1049,7 +1054,7 @@ function showToast(msg, type=""){
   _toastTimer=setTimeout(()=>el.classList.remove("show"), type==="ok"?3000:4500);
 }
 
-function updateDashboard(){updateStats();updateFilterOpts();renderTable();renderCharts();}
+function updateDashboard(){updateStats();updateFilterOpts();renderTable();renderCharts();renderSubmitGrid();}
 
 function updateStats(){
   document.getElementById("stat-total").textContent=allData.length;
@@ -1200,6 +1205,51 @@ function cancelSubmit(cls,grp,idx){
   localStorage.setItem("buoyancy_data",JSON.stringify(allData));
   closeDetail();
   updateDashboard();
+}
+
+function renderSubmitGrid(){
+  const wrap = document.getElementById("submit-grid-wrap");
+  const grid = document.getElementById("submit-grid");
+  if(!wrap||!grid) return;
+  if(allData.length===0){ wrap.style.display="none"; return; }
+  wrap.style.display="block";
+
+  // 반별로 제출된 모둠 번호 정리
+  const byClass = {};
+  for(let i=1;i<=11;i++) byClass[i+"반"] = new Set();
+  allData.forEach(d=>{ if(d.class && d.group) byClass[d.class].add(d.group); });
+
+  grid.innerHTML = Object.entries(byClass)
+    .filter(([cls])=> byClass[cls].size > 0 || true)
+    .sort((a,b)=>parseInt(a[0])-parseInt(b[0]))
+    .map(([cls, groups])=>{
+      const count = groups.size;
+      const dots = [];
+      for(let g=1;g<=10;g++){
+        const gkey = g+"모둠";
+        const submitted = groups.has(gkey);
+        dots.push(`<span title="${gkey}" style="display:inline-block;width:20px;height:20px;border-radius:50%;margin:2px;font-size:10px;line-height:20px;text-align:center;cursor:pointer;
+          background:${submitted?"#1A3A6B":"#e8edf5"};color:${submitted?"white":"#aaa"};font-weight:700;border:1px solid ${submitted?"#1A3A6B":"#dde3ee"}"
+          onclick="filterByGroup('${cls}','${gkey}')">${g}</span>`);
+      }
+      return `<div style="background:white;border:1px solid #dde3ee;border-radius:8px;padding:8px 10px;cursor:pointer"
+        onclick="filterByClass('${cls}')">
+        <div style="font-size:12px;font-weight:700;color:#1A3A6B;margin-bottom:6px">${cls} <span style="color:#666;font-weight:400">(${count}/10)</span></div>
+        <div>${dots.join("")}</div>
+      </div>`;
+    }).join("");
+}
+
+function filterByClass(cls){
+  document.getElementById("filter-class").value=cls;
+  document.getElementById("filter-group").value="";
+  renderTable();
+}
+
+function filterByGroup(cls,grp){
+  document.getElementById("filter-class").value=cls;
+  document.getElementById("filter-group").value=grp;
+  renderTable();
 }
 
 function exportExcel(){
